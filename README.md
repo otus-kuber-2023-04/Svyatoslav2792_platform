@@ -1,3 +1,5 @@
+# Svyatoslav2792_platform
+Svyatoslav2792 Platform repository
 ДЗ 1
 Задание
 Разберитесь почему все pod в namespace kube-system восстановились после удаления. Укажите причину в описании PR
