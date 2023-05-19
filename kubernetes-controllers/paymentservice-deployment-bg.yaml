@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service-bg
+  labels:
+    app: payment-service-bg
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: payment-service-bg
+  template:
+    metadata:
+      labels:
+        app: payment-service-bg
+    spec:
+      containers:
+        - name: payment-server
+          image: fastfighter92/paymentservice:v0.0.2
+          env:
+            - name: PORT
+              value: "7887"
+            - name: DISABLE_PROFILER
+              value: "1"
+            - name: DISABLE_DEBUGGER
+              value: "1"
