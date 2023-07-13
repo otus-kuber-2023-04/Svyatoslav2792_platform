@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx-monitoring
+          image: fastfighter92/kubernetes-monitoring:v0.0.1
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8000
+          livenessProbe:
+            tcpSocket: { port: 8000 }
+          volumeMounts:
+            - name: app
+              mountPath: /app
+      initContainers:
+        - name: nginx-monitoring-init
+          image: busybox:1.32.0
+          command: [ 'sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh' ]
+          volumeMounts:
+            - name: app
+              mountPath: /app
+      volumes:
+        - name: app
+          emptyDir: { }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: nginx
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000
